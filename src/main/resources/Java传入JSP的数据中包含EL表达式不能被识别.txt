@@ -1,0 +1,21 @@
+JAVA传入JSP中包含EL表达式不能再被JSP解析,这涉及加载顺序问题.
+当java返回EL表达式到页面时,JSP页面已经加载完成.
+相关链接:
+<1>http://zhidao.baidu.com/link?url=_sMi3KvooiHs1_5sIyHLtfIScvVAaCu4U8g3ZuOhH-64jix4rA-DbQCfdaoLokeXisI-QU-0amVIP-byRVznBm2cxbHKs3FdiYsZS6Qc4IC
+<2>http://zhidao.baidu.com/link?url=R2jQDTA0LVMwc4lzdpmf0gmPvzYUpPoQAUFr-4WG4pZI2IyCcQGQ6wCDRAU--vSVc6elJLBlg8nMRSZzTSvVLa
+
+
+解决方案:
+在服务器端对其进行取缔,方法如下:
+
+public static String getWithFormat(String str,String key, Map<String, String> params) {
+		String regex = "\\$\\{([^)]*?)\\}";
+		Pattern p = Pattern.compile(regex);
+		Matcher m = p.matcher(str);
+		while (m.find()) {
+			key = m.group(1);
+			String value = params.get(key);
+			str = str.replace("${" + key + "}", StringUtils.defaultIfEmpty(value, ""));
+		}
+		return str;
+	}
